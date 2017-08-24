@@ -31,7 +31,7 @@ static const struct file_operations proc_fops = {
 ssize_t write_proc(struct file *filp, const char __user *buffer,
 		size_t size, loff_t *offset)
 {
-	char* kbuffer;
+	char *kbuffer;
 	__be32 dest_addr;
 	__be32 source_addr;
 	struct icmphdr icmp;
@@ -43,7 +43,7 @@ ssize_t write_proc(struct file *filp, const char __user *buffer,
 
 	source_addr = in_aton("192.168.56.102");
 
-	kbuffer = (char*)kmalloc(size+1, GFP_KERNEL);
+	kbuffer = (char *)kmalloc(size+1, GFP_KERNEL);
 	copy_from_user(kbuffer, buffer, size);
 	if (kbuffer[size-1] != '\0')
 		kbuffer[size] = '\0';
@@ -59,7 +59,7 @@ ssize_t write_proc(struct file *filp, const char __user *buffer,
 	icmp.un.echo.id = 1234;
 	icmp.un.echo.sequence = 1;
 	icmp.checksum = 0;
-	csum = csum_partial((char*)&icmp, sizeof(struct icmphdr), 0);
+	csum = csum_partial((char *)&icmp, sizeof(struct icmphdr), 0);
 	icmp.checksum = csum_fold(csum);
 
 	ip.version = 4;
@@ -73,7 +73,7 @@ ssize_t write_proc(struct file *filp, const char __user *buffer,
 	ip.check = 0;
 	ip.saddr = source_addr;
 	ip.daddr = dest_addr;
-	ip.check = ip_fast_csum((const void*)&ip, ip.ihl);
+	ip.check = ip_fast_csum((const void *)&ip, ip.ihl);
 
 	memset(&eth, 0, sizeof(eth));
 	eth.h_dest[0] = 0x0a;
@@ -118,7 +118,8 @@ static int __init hello_init(void)
 {
 	proc_file = proc_create(PROC_FILE_NAME, 0666, NULL, &proc_fops);
 	if (proc_file == NULL) {
-		pr_err("[%s] can't create /proc/%s\n", MY_MODULE_NAME, PROC_FILE_NAME);
+		pr_err("[%s] can't create /proc/%s\n", MY_MODULE_NAME,
+				PROC_FILE_NAME);
 		return -ENOMEM;
 	}
 	pr_info("[%s] init\n", MY_MODULE_NAME);
